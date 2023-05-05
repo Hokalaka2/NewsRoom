@@ -1,6 +1,12 @@
 package com.example.newsroom.ui.screen.main
 
 import androidx.lifecycle.ViewModel
+import com.example.newsroom.data.Post
+import com.example.newsroom.data.PostWithId
+import com.example.newsroom.ui.screen.writepost.WritePostViewModel
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.callbackFlow
 

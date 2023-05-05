@@ -21,6 +21,7 @@ import androidx.compose.ui.unit.dp
 import androidx.core.content.FileProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import java.io.File
 
 @RequiresApi(Build.VERSION_CODES.P)
@@ -32,9 +33,6 @@ fun WritePostScreen(
 ) {
     var postTitle by remember { mutableStateOf("") }
     var postBody by remember { mutableStateOf("") }
-    val cameraPermissionState = rememberPermissionState(
-        android.Manifest.permission.CAMERA
-    )
 
     val context = LocalContext.current
     var hasImage by remember {
@@ -43,12 +41,6 @@ fun WritePostScreen(
     var imageUri by remember {
         mutableStateOf<Uri?>(null)
     }
-    val cameraLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.TakePicture(),
-        onResult = { success ->
-            hasImage = success
-        }
-    )
 
     Column(
         modifier = Modifier.padding(20.dp)
@@ -67,31 +59,6 @@ fun WritePostScreen(
                 postBody = it
             }
         )
-
-        // permission here
-        if(cameraPermissionState.status.isGranted){
-            Button(onClick = {
-                val uri = ComposeFileProvider.getImageUri(context)
-                imageUri = uri
-                cameraLauncher.launch(uri)
-            }) {
-                Text(text = "Take photo")
-            }
-        }else{
-            Column() {
-                val permissionText = if(cameraPermissionState.status.shouldShowRationale) {
-                    "Please reconsider giving the camera permission it is need if you want to take photo for the message"
-                } else {
-                    "Give permission for using photos with items"
-                }
-                Text(text = permissionText)
-                Button(onClick = {
-                    cameraPermissionState.launchPermissionRequest()
-                }){
-                    Text(text = "Request permission")
-                }
-            }
-        }
 
         Button(onClick = {
             if(imageUri == null) {
@@ -135,7 +102,7 @@ fun WritePostScreen(
 }
 
 class ComposeFileProvider : FileProvider(
-    hu.ait.aitforum.R.xml.filepaths
+    com.example.newsroom.R.xml.filepaths
 ) {
     companion object {
         fun getImageUri(context: Context): Uri {
