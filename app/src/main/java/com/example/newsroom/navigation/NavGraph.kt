@@ -8,6 +8,9 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.newsroom.navigation.Screen
+import com.example.newsroom.ui.screen.login.LoginScreen
+import com.example.newsroom.ui.screen.main.MainScreen
+import com.example.newsroom.ui.screen.writepost.WritePostScreen
 
 @RequiresApi(Build.VERSION_CODES.P)
 @Composable

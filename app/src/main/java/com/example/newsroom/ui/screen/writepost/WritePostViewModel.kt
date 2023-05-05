@@ -29,10 +29,6 @@ sealed interface WritePostUiState {
     object LoadingPostUpload : WritePostUiState
     object PostUploadSuccess : WritePostUiState
     data class ErrorDuringPostUpload(val error: String?) : WritePostUiState
-
-    object LoadingImageUpload : WritePostUiState
-    data class ErrorDuringImageUpload(val error: String?) : WritePostUiState
-    object ImageUploadSuccess : WritePostUiState
 }
 
 
@@ -45,7 +41,6 @@ class WritePostViewModel: ViewModel() {
     private lateinit var auth: FirebaseAuth
 
     init {
-        //auth = FirebaseAuth.getInstance()
         auth = Firebase.auth
     }
 
@@ -58,8 +53,7 @@ class WritePostViewModel: ViewModel() {
             uid = auth.currentUser!!.uid,
             author = auth.currentUser!!.email!!,
             title = title,
-            body = postBody,
-            imgUrl = imgUrl
+            body = postBody
         )
 
         val postCollection = FirebaseFirestore.getInstance().collection(COLLECTION_POSTS)
@@ -70,43 +64,4 @@ class WritePostViewModel: ViewModel() {
             writePostUiState = WritePostUiState.ErrorDuringPostUpload(it.message)
         }
     }
-
-    @RequiresApi(Build.VERSION_CODES.P)
-    public fun uploadPostImage(
-        contentResolver: ContentResolver, imageUri: Uri,
-        title: String, postBody: String
-    ) {
-        viewModelScope.launch {
-            writePostUiState = WritePostUiState.LoadingImageUpload
-
-            val source = ImageDecoder.createSource(contentResolver, imageUri)
-            val bitmap = ImageDecoder.decodeBitmap(source)
-
-            val baos = ByteArrayOutputStream()
-            bitmap?.compress(Bitmap.CompressFormat.JPEG, 100, baos)
-            val imageInBytes = baos.toByteArray()
-
-            // prepare the empty file in the cloud
-            val storageRef = FirebaseStorage.getInstance().getReference()
-            val newImage = URLEncoder.encode(UUID.randomUUID().toString(), "UTF-8") + ".jpg"
-            val newImagesRef = storageRef.child("images/$newImage")
-
-            // upload the jpeg byte array to the created empty file
-            newImagesRef.putBytes(imageInBytes)
-                .addOnFailureListener { e ->
-                    writePostUiState = WritePostUiState.ErrorDuringImageUpload(e.message)
-                }.addOnSuccessListener { taskSnapshot ->
-                    writePostUiState = WritePostUiState.ImageUploadSuccess
-
-                    newImagesRef.downloadUrl.addOnCompleteListener(
-                        object : OnCompleteListener<Uri> {
-                            override fun onComplete(task: Task<Uri>) {
-                                // the public URL of the image is: task.result.toString()
-                                uploadPost(title, postBody, task.result.toString())
-                            }
-                        })
-                }
-        }
-    }
-
 }

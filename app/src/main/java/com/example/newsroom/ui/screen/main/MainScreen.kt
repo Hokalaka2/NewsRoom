@@ -160,18 +160,6 @@ fun PostCard(
                     }
                 }
             }
-
-            if (post.imgUrl.isNotEmpty()) {
-                AsyncImage(
-                    model = ImageRequest.Builder(LocalContext.current)
-                        .data(post.imgUrl)
-                        .crossfade(true)
-                        .build(),
-                    contentDescription = "Image",
-                    contentScale = ContentScale.Fit,
-                    modifier = Modifier.size(80.dp)
-                )
-            }
         }
     }
 }

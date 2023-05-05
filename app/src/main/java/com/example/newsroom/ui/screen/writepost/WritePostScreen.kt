@@ -21,11 +21,9 @@ import androidx.compose.ui.unit.dp
 import androidx.core.content.FileProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
-import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import java.io.File
 
 @RequiresApi(Build.VERSION_CODES.P)
-@OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun WritePostScreen(
     onWritePostSuccess: () -> Unit = {},
@@ -33,14 +31,6 @@ fun WritePostScreen(
 ) {
     var postTitle by remember { mutableStateOf("") }
     var postBody by remember { mutableStateOf("") }
-
-    val context = LocalContext.current
-    var hasImage by remember {
-        mutableStateOf(false)
-    }
-    var imageUri by remember {
-        mutableStateOf<Uri?>(null)
-    }
 
     Column(
         modifier = Modifier.padding(20.dp)
@@ -61,26 +51,10 @@ fun WritePostScreen(
         )
 
         Button(onClick = {
-            if(imageUri == null) {
-                writePostViewModel.uploadPost(postTitle, postBody)
-            } else {
-                writePostViewModel.uploadPostImage(
-                    context.contentResolver,
-                    imageUri!!,
-                    postTitle,
-                    postBody
-                )
-            }
+            writePostViewModel.uploadPost(postTitle, postBody)
         }) {
             Text(text = "Upload")
         }
-
-        if(hasImage && imageUri != null) {
-            AsyncImage(model = imageUri,
-                modifier = Modifier.size(200.dp,200.dp),
-                contentDescription = "selected image")
-        }
-
         when (writePostViewModel.writePostUiState) {
             is WritePostUiState.LoadingPostUpload -> CircularProgressIndicator()
             is WritePostUiState.PostUploadSuccess -> {
@@ -90,35 +64,7 @@ fun WritePostScreen(
             is WritePostUiState.ErrorDuringPostUpload ->
                 Text(text = "${(
                         writePostViewModel.writePostUiState as WritePostUiState.ErrorDuringPostUpload).error}")
-            is WritePostUiState.LoadingImageUpload -> CircularProgressIndicator()
-            is WritePostUiState.ImageUploadSuccess -> {
-                Text(text = "Image uploaded, starting post upload.")
-            }
-            is WritePostUiState.ErrorDuringImageUpload -> Text(text = "${(writePostViewModel.writePostUiState as WritePostUiState.ErrorDuringImageUpload).error}")
-
             else -> {}
-        }
-    }
-}
-
-class ComposeFileProvider : FileProvider(
-    com.example.newsroom.R.xml.filepaths
-) {
-    companion object {
-        fun getImageUri(context: Context): Uri {
-            val directory = File(context.cacheDir, "images")
-            directory.mkdirs()
-            val file = File.createTempFile(
-                "selected_image_",
-                ".jpg",
-                directory,
-            )
-            val authority = context.packageName + ".fileprovider"
-            return getUriForFile(
-                context,
-                authority,
-                file,
-            )
         }
     }
 }
