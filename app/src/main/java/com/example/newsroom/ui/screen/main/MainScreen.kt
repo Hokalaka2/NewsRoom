@@ -51,9 +51,6 @@ fun MainScreen(
             if (postListState.value == MainScreenUIState.Init) {
                 Text(text = "Initializing..")
             } else if (postListState.value is MainScreenUIState.Success) {
-                //Text(text = "Messages number: " +
-                //        "${(postListState.value as MainScreenUIState.Success).postList.size}")
-
                 LazyColumn() {
                     items((postListState.value as MainScreenUIState.Success).postList){
                         PostCard(post = it.post,
@@ -139,7 +136,7 @@ fun PostCard(
                         .weight(1f)
                 ) {
                     Text(
-                        text = post.title,
+                        text = post.author,
                     )
                     Text(
                         text = post.body,
