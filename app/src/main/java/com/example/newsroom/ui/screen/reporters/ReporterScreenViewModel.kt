@@ -2,12 +2,12 @@ package com.example.newsroom.ui.screen.reporters
 
 import androidx.lifecycle.ViewModel
 import com.example.newsroom.data.Reporter
+import com.example.newsroom.ui.screen.signup.RegisterViewModel
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.callbackFlow
-import com.example.newsroom.ui.screen.signup.SignUpViewModel
 
 sealed interface ReporterScreenUIState {
     object Init : ReporterScreenUIState
@@ -28,7 +28,7 @@ class ReporterScreenViewModel : ViewModel() {
 
     fun reportersList() = callbackFlow {
         val snapshotListener =
-            FirebaseFirestore.getInstance().collection(SignUpViewModel.COLLECTION_REPORTERS)
+            FirebaseFirestore.getInstance().collection(RegisterViewModel.COLLECTION_REPORTERS)
                 .addSnapshotListener() { snapshot, e ->
                     val response = if (snapshot != null) {
                         val reporterList = snapshot.toObjects(Reporter::class.java)
