@@ -7,6 +7,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.callbackFlow
+import com.example.newsroom.ui.screen.signup.SignUpViewModel
 
 sealed interface ReporterScreenUIState {
     object Init : ReporterScreenUIState
