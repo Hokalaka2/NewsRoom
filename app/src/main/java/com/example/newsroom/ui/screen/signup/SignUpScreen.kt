@@ -18,13 +18,13 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.newsroom.ui.screen.login.LoginUiState
 import com.example.newsroom.ui.screen.login.LoginViewModel
-import com.example.newsroom.ui.screen.login.RegisterUIState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 @Composable
 fun SignUpScreen(
+    registerViewModel: RegisterViewModel = viewModel(),
     loginViewModel: LoginViewModel = viewModel(),
     onRegisterSuccess: () -> Unit
 ) {
@@ -91,8 +91,8 @@ fun SignUpScreen(
                 OutlinedButton(onClick = {
                     // do registration..
                     coroutineScope.launch {
-                        loginViewModel.registerUser(email, password)
-                        if(loginViewModel.registerUIState == RegisterUIState.RegisterSuccess) {
+                        registerViewModel.registerUser(email, password)
+                        if(registerViewModel.registerUIState == RegisterUIState.RegisterSuccess) {
                             var result = loginViewModel.loginUser(email, password)
                             if (result?.user != null) {
                                 withContext(Dispatchers.Main) {
@@ -113,7 +113,7 @@ fun SignUpScreen(
                 .padding(bottom = 50.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            when (loginViewModel.registerUIState){
+            when (registerViewModel.registerUIState){
                 is RegisterUIState.Loading -> CircularProgressIndicator()
                 is RegisterUIState.Error -> Text(text = "Error: ${
                     (loginViewModel.loginUiState as LoginUiState.Error).error
