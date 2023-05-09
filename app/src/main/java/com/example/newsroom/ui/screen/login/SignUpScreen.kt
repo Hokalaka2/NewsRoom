@@ -23,9 +23,9 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 @Composable
-fun LoginScreen(
+fun SignUpScreen(
     loginViewModel: LoginViewModel = viewModel(),
-    onLoginSuccess: () -> Unit
+    onRegisterSuccess: () -> Unit
 ) {
     var showPassword by rememberSaveable { mutableStateOf(false) }
     var email by rememberSaveable { mutableStateOf("Otis.true@gmail.com") }
@@ -91,6 +91,12 @@ fun LoginScreen(
                     // do registration..
                     coroutineScope.launch {
                         loginViewModel.registerUser(email, password)
+                        var result = loginViewModel.loginUser(email, password)
+                        if(result?.user !=null){
+                            withContext(Dispatchers.Main){
+                                onRegisterSuccess()
+                            }
+                        }
                     }
                 }) {
                     Text(text = "Register")

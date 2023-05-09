@@ -11,6 +11,7 @@ import com.example.newsroom.navigation.Screen
 import com.example.newsroom.ui.screen.login.LoginScreen
 import com.example.newsroom.ui.screen.main.MainScreen
 import com.example.newsroom.ui.screen.writepost.WritePostScreen
+import com.example.newsroom.ui.screen.signup.SignUpScreen
 
 @RequiresApi(Build.VERSION_CODES.P)
 @Composable
@@ -43,6 +44,13 @@ fun NavGraph(
                 onWritePostSuccess = {
                     //navController.navigate(Screen.Main.route)
                     navController.popBackStack(Screen.Main.route, false)
+                }
+            )
+        }
+        composable(Screen.RegisterUser.route){
+            SignUpScreen(
+                onRegisterSuccess = {
+                    navController.navigate(Screen.Main.route)
                 }
             )
         }
