@@ -23,7 +23,8 @@ import kotlinx.coroutines.withContext
 @Composable
 fun LoginScreen(
     loginViewModel: LoginViewModel = viewModel(),
-    onLoginSuccess: () -> Unit
+    onLoginSuccess: () -> Unit,
+    onRegisterUser: () ->
 ) {
     var showPassword by rememberSaveable { mutableStateOf(false) }
     var email by rememberSaveable { mutableStateOf("Otis.true@gmail.com") }
