@@ -118,6 +118,9 @@ fun SignUpScreen(
                     coroutineScope.launch {
                         registerViewModel.registerUser(email, password)
                         if(registerViewModel.registerUIState == RegisterUIState.RegisterSuccess) {
+                            if(reporterCheckBox){
+                                registerViewModel.createReporter()
+                            }
                             var result = loginViewModel.loginUser(email, password)
                             if (result?.user != null) {
                                 withContext(Dispatchers.Main) {
