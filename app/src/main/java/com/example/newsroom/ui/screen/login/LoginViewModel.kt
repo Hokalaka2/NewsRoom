@@ -14,13 +14,19 @@ import kotlinx.coroutines.tasks.await
 sealed interface LoginUiState {
     object Init : LoginUiState
     object LoginSuccess : LoginUiState
-    object RegisterSuccess : LoginUiState
     data class Error(val error: String?) : LoginUiState
     object Loading : LoginUiState
 }
+
+sealed interface RegisterUIState {
+    object Init : RegisterUIState
+    object RegisterSuccess : RegisterUIState
+    data class Error(val error: String?) : RegisterUIState
+    object Loading : RegisterUIState
+}
 class LoginViewModel() : ViewModel() {
     var loginUiState: LoginUiState by mutableStateOf(LoginUiState.Init)
-
+    var registerUIState: RegisterUIState by mutableStateOf(RegisterUIState.Init)
     private lateinit var auth: FirebaseAuth
 
     init {
@@ -28,16 +34,16 @@ class LoginViewModel() : ViewModel() {
     }
 
     suspend fun registerUser(email: String, password: String) {
-        loginUiState = LoginUiState.Loading
+        registerUIState = RegisterUIState.Loading
         delay(2000)
         try{
             auth.createUserWithEmailAndPassword(email, password).addOnSuccessListener {
-                loginUiState = LoginUiState.RegisterSuccess
+                registerUIState = RegisterUIState.RegisterSuccess
             }.addOnFailureListener {
-                loginUiState = LoginUiState.Error(it.message)
+                registerUIState = RegisterUIState.Error(it.message)
             }
         } catch (e: java.lang.Exception){
-            loginUiState = LoginUiState.Error(e.message)
+            registerUIState = RegisterUIState.Error(e.message)
         }
     }
 

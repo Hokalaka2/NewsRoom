@@ -18,6 +18,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.newsroom.ui.screen.login.LoginUiState
 import com.example.newsroom.ui.screen.login.LoginViewModel
+import com.example.newsroom.ui.screen.login.RegisterUIState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -91,10 +92,12 @@ fun SignUpScreen(
                     // do registration..
                     coroutineScope.launch {
                         loginViewModel.registerUser(email, password)
-                        var result = loginViewModel.loginUser(email, password)
-                        if(result?.user !=null){
-                            withContext(Dispatchers.Main){
-                                onRegisterSuccess()
+                        if(loginViewModel.registerUIState == RegisterUIState.RegisterSuccess) {
+                            var result = loginViewModel.loginUser(email, password)
+                            if (result?.user != null) {
+                                withContext(Dispatchers.Main) {
+                                    onRegisterSuccess()
+                                }
                             }
                         }
                     }
@@ -110,14 +113,13 @@ fun SignUpScreen(
                 .padding(bottom = 50.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            when (loginViewModel.loginUiState){
-                is LoginUiState.Loading -> CircularProgressIndicator()
-                is LoginUiState.RegisterSuccess -> Text(text = "Registration OK")
-                is LoginUiState.Error -> Text(text = "Error: ${
+            when (loginViewModel.registerUIState){
+                is RegisterUIState.Loading -> CircularProgressIndicator()
+                is RegisterUIState.Error -> Text(text = "Error: ${
                     (loginViewModel.loginUiState as LoginUiState.Error).error
                 }")
-                is LoginUiState.LoginSuccess -> Text(text = "Login OK")
-                LoginUiState.Init -> {}
+                is RegisterUIState.RegisterSuccess -> Text(text = "Registration OK")
+                RegisterUIState.Init -> {}
             }
         }
     }

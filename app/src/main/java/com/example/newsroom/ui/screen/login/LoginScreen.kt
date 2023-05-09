@@ -115,7 +115,6 @@ fun LoginScreen(
         ) {
             when (loginViewModel.loginUiState){
                 is LoginUiState.Loading -> CircularProgressIndicator()
-                is LoginUiState.RegisterSuccess -> Text(text = "Registration OK")
                 is LoginUiState.Error -> Text(text = "Error: ${
                     (loginViewModel.loginUiState as LoginUiState.Error).error
                 }")
