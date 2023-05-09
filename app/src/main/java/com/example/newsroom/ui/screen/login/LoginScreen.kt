@@ -24,7 +24,7 @@ import kotlinx.coroutines.withContext
 fun LoginScreen(
     loginViewModel: LoginViewModel = viewModel(),
     onLoginSuccess: () -> Unit,
-    onRegisterUser: () ->
+    onRegisterClick: () -> Unit
 ) {
     var showPassword by rememberSaveable { mutableStateOf(false) }
     var email by rememberSaveable { mutableStateOf("Otis.true@gmail.com") }
@@ -100,9 +100,7 @@ fun LoginScreen(
                 }
                 OutlinedButton(onClick = {
                     // do registration..
-                    coroutineScope.launch {
-                        loginViewModel.registerUser(email, password)
-                    }
+                    onRegisterClick()
                 }) {
                     Text(text = "Register")
                 }

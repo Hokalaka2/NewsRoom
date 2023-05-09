@@ -22,12 +22,14 @@ fun NavGraph(
         startDestination = Screen.LoginUser.route
     ) {
         composable(Screen.LoginUser.route) {
-            LoginScreen(onLoginSuccess = {
+            LoginScreen(
+                onLoginSuccess = {
                 navController.navigate(Screen.Main.route)
+                },
                 onRegisterClick = {
                     navController.navigate(Screen.RegisterUser.route)
                 }
-            })
+            )
         }
         composable(Screen.Main.route) {
             MainScreen(
