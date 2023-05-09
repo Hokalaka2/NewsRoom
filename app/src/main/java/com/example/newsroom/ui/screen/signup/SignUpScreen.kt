@@ -29,8 +29,10 @@ fun SignUpScreen(
     onRegisterSuccess: () -> Unit
 ) {
     var showPassword by rememberSaveable { mutableStateOf(false) }
-    var email by rememberSaveable { mutableStateOf("Otis.true@gmail.com") }
-    var password by rememberSaveable { mutableStateOf("123456") }
+    var email by rememberSaveable { mutableStateOf("") }
+    var name by rememberSaveable { mutableStateOf("") }
+    var reporterCheckBox by rememberSaveable { mutableStateOf(false) }
+    var password by rememberSaveable { mutableStateOf("") }
     val coroutineScope = rememberCoroutineScope()
 
     Box() {
@@ -48,6 +50,17 @@ fun SignUpScreen(
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
+            OutlinedTextField(
+                modifier = Modifier.fillMaxWidth(0.8f),
+                label = {
+                    Text(text = "Name")
+                },
+                value = name,
+                onValueChange = {
+                   name = it
+                },
+                singleLine = true
+            )
             OutlinedTextField(
                 modifier = Modifier.fillMaxWidth(0.8f),
                 label = {
@@ -84,6 +97,18 @@ fun SignUpScreen(
                     }
                 }
             )
+            Row(
+                horizontalArrangement = Arrangement.Start,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text="Reporter: ",
+                    fontSize = 18.sp
+                )
+                Checkbox(checked = reporterCheckBox, onCheckedChange = {
+                    reporterCheckBox = it
+                })
+            }
             Row(
                 modifier = Modifier.fillMaxWidth(0.8f),
                 horizontalArrangement = Arrangement.SpaceBetween
