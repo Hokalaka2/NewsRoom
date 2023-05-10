@@ -25,14 +25,13 @@ import kotlinx.coroutines.withContext
 @Composable
 fun SignUpScreen(
     registerViewModel: RegisterViewModel = viewModel(),
-    loginViewModel: LoginViewModel = viewModel(),
     onRegisterSuccess: () -> Unit
 ) {
     var showPassword by rememberSaveable { mutableStateOf(false) }
-    var email by rememberSaveable { mutableStateOf("") }
-    var name by rememberSaveable { mutableStateOf("") }
+    var email by rememberSaveable { mutableStateOf("nytimes@gmail.com") }
+    var name by rememberSaveable { mutableStateOf("New York Times") }
     var reporterCheckBox by rememberSaveable { mutableStateOf(false) }
-    var password by rememberSaveable { mutableStateOf("") }
+    var password by rememberSaveable { mutableStateOf("password") }
     val coroutineScope = rememberCoroutineScope()
 
     Box() {
@@ -117,17 +116,15 @@ fun SignUpScreen(
                     // do registration..
                     coroutineScope.launch {
                         registerViewModel.registerUser(email, password)
-                        if(registerViewModel.registerUIState == RegisterUIState.RegisterSuccess) {
-                            if(reporterCheckBox){
-                                registerViewModel.createReporter()
-                            }
-                            var result = loginViewModel.loginUser(email, password)
-                            if (result?.user != null) {
+
+                         /**  var result = loginViewModel.loginUser(email, password)
+                            if(result?.user != null) {
                                 withContext(Dispatchers.Main) {
                                     onRegisterSuccess()
                                 }
                             }
-                        }
+                            */
+
                     }
                 }) {
                     Text(text = "Register")
@@ -144,9 +141,18 @@ fun SignUpScreen(
             when (registerViewModel.registerUIState){
                 is RegisterUIState.Loading -> CircularProgressIndicator()
                 is RegisterUIState.Error -> Text(text = "Error: ${
-                    (loginViewModel.loginUiState as LoginUiState.Error).error
+                    (registerViewModel.registerUIState as RegisterUIState.Error).error
                 }")
-                is RegisterUIState.RegisterSuccess -> Text(text = "Registration OK")
+                is RegisterUIState.RegisterSuccess -> {
+                    Text(text = "Registration OK")
+
+                    if(reporterCheckBox){
+                        registerViewModel.createReporter()
+                    }
+                }
+                is RegisterUIState.ReporterCollectionAdded -> {
+                    Text(text = "Reporter added")
+                }
                 RegisterUIState.Init -> {}
             }
         }

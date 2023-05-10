@@ -32,13 +32,16 @@ import com.example.newsroom.data.Post
 @Composable
 fun MainScreen(
     onWriteNewPostClick: () -> Unit = {},
+    onReportersClick: () -> Unit = {},
     mainScreenViewModel: MainScreenViewModel = viewModel()
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
     val postListState = mainScreenViewModel.postsList().collectAsState(initial = MainScreenUIState.Init)
 
     Scaffold(
-        topBar = { MainTopBar(title = "AIT Forum") },
+        topBar = { MainTopBar(
+            title = "AIT Forum",
+            onReportersClick = onReportersClick) },
         floatingActionButton = {
             MainFloatingActionButton(
                 onWriteNewPostClick = onWriteNewPostClick,
@@ -89,7 +92,7 @@ fun MainFloatingActionButton(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainTopBar(title: String) {
+fun MainTopBar(title: String, onReportersClick: () -> Unit = {}) {
     TopAppBar(
         title = { Text(title) },
         colors = TopAppBarDefaults.topAppBarColors(
@@ -98,7 +101,9 @@ fun MainTopBar(title: String) {
         ),
         actions = {
             IconButton(
-                onClick = { }
+                onClick = {
+                    onReportersClick()
+                }
             ) {
                 Icon(Icons.Filled.Info, contentDescription = "Info")
             }

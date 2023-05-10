@@ -17,6 +17,7 @@ import kotlinx.coroutines.delay
 sealed interface RegisterUIState {
     object Init : RegisterUIState
     object RegisterSuccess : RegisterUIState
+    object ReporterCollectionAdded : RegisterUIState
     data class Error(val error: String?) : RegisterUIState
     object Loading : RegisterUIState
 }
@@ -45,7 +46,7 @@ class RegisterViewModel(): ViewModel() {
         val reporterCollection = FirebaseFirestore.getInstance().collection(COLLECTION_REPORTERS)
 
         reporterCollection.add(myReporter).addOnSuccessListener {
-            registerUIState = RegisterUIState.RegisterSuccess
+            registerUIState = RegisterUIState.ReporterCollectionAdded
         }.addOnFailureListener{
             registerUIState = RegisterUIState.Error(it.message)
         }

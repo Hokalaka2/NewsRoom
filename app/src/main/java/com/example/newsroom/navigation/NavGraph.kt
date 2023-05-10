@@ -10,6 +10,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.newsroom.navigation.Screen
 import com.example.newsroom.ui.screen.login.LoginScreen
 import com.example.newsroom.ui.screen.main.MainScreen
+import com.example.newsroom.ui.screen.reporters.ReporterScreen
 import com.example.newsroom.ui.screen.writepost.WritePostScreen
 import com.example.newsroom.ui.screen.signup.SignUpScreen
 
@@ -36,6 +37,9 @@ fun NavGraph(
             MainScreen(
                 onWriteNewPostClick = {
                     navController.navigate(Screen.WritePost.route)
+                },
+                onReportersClick = {
+                    navController.navigate(Screen.Reporters.route)
                 }
             )
         }
@@ -53,6 +57,9 @@ fun NavGraph(
                     navController.navigate(Screen.Main.route)
                 }
             )
+        }
+        composable(Screen.Reporters.route){
+            ReporterScreen()
         }
     }
 }
