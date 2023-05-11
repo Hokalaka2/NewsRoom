@@ -38,7 +38,10 @@ fun NavGraph(
                 onWriteNewPostClick = {
                     navController.navigate(Screen.WritePost.route)
                 },
-                onReportersClick = {
+                showReportersClick = {
+                    navController.navigate(Screen.Reporters.route)
+                },
+                showOneReporterClick = {
                     navController.navigate(Screen.Reporters.route)
                 }
             )

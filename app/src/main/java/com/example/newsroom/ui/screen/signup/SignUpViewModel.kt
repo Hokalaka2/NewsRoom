@@ -6,6 +6,7 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import com.example.newsroom.data.Post
 import com.example.newsroom.data.Reporter
+import com.example.newsroom.data.User
 import com.example.newsroom.ui.screen.writepost.WritePostUiState
 import com.example.newsroom.ui.screen.writepost.WritePostViewModel
 import com.google.firebase.auth.FirebaseAuth
@@ -17,6 +18,7 @@ import kotlinx.coroutines.delay
 sealed interface RegisterUIState {
     object Init : RegisterUIState
     object RegisterSuccess : RegisterUIState
+    object RegisterUserSucess: RegisterUIState
     object ReporterCollectionAdded : RegisterUIState
     data class Error(val error: String?) : RegisterUIState
     object Loading : RegisterUIState
@@ -25,6 +27,7 @@ sealed interface RegisterUIState {
 class RegisterViewModel(): ViewModel() {
     companion object {
         const val COLLECTION_REPORTERS = "reporters"
+        const val COLLECTION_USERS = "users"
     }
 
     var registerUIState: RegisterUIState by mutableStateOf(RegisterUIState.Init)
@@ -34,13 +37,36 @@ class RegisterViewModel(): ViewModel() {
         auth = Firebase.auth
     }
 
-    fun createReporter(
-    ) {
+    fun createUser(name: String, email: String, reporter: Boolean){
+        registerUIState = RegisterUIState.Loading
+
+        val myUser = User(
+            uid = auth.currentUser!!.uid,
+            name = name,
+            email = email,
+            reporter = reporter,
+            following = emptyList(),
+            savedPosts =  emptyList()
+        )
+
+        val userCollection = FirebaseFirestore.getInstance().collection(COLLECTION_USERS)
+
+        userCollection.document(auth.currentUser!!.uid).set(myUser).addOnSuccessListener {
+            registerUIState = RegisterUIState.RegisterUserSucess
+            if(reporter){
+                createReporter(name)
+            }
+        }.addOnFailureListener{
+            registerUIState = RegisterUIState.Error(it.message)
+        }
+    }
+    fun createReporter(name: String) {
         registerUIState = RegisterUIState.Loading
 
         val myReporter = Reporter(
             uid = auth.currentUser!!.uid,
-            author = auth.currentUser!!.email!!,
+            author = name,
+            posts = emptyList()
         )
 
         val reporterCollection = FirebaseFirestore.getInstance().collection(COLLECTION_REPORTERS)

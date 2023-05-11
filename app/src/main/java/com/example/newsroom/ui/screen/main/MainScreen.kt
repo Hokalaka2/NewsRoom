@@ -1,5 +1,6 @@
 package com.example.newsroom.ui.screen.main
 
+import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -13,54 +14,72 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.lifecycle.viewmodel.viewModelFactory
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.example.newsroom.data.Post
+import com.example.newsroom.ui.screen.reporters.MainTopBar
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
+import kotlin.coroutines.coroutineContext
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainScreen(
     onWriteNewPostClick: () -> Unit = {},
-    onReportersClick: () -> Unit = {},
-    mainScreenViewModel: MainScreenViewModel = viewModel()
+    showReportersClick: () -> Unit = {},
+    mainScreenViewModel: MainScreenViewModel = viewModel(factory = MainScreenViewModel.factory),
+    showOneReporterClick: () -> Unit = {},
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
     val postListState = mainScreenViewModel.postsList().collectAsState(initial = MainScreenUIState.Init)
 
+    var currentUser = mainScreenViewModel.currentUser
+
     Scaffold(
         topBar = { MainTopBar(
             title = "AIT Forum",
-            onReportersClick = onReportersClick) },
-        floatingActionButton = {
-            MainFloatingActionButton(
-                onWriteNewPostClick = onWriteNewPostClick,
-                snackbarHostState = snackbarHostState
-            )
-        }
+            onReportersClick = showReportersClick) },
+            floatingActionButton = {
+                MainFloatingActionButton(
+                    onWriteNewPostClick = onWriteNewPostClick,
+                    mainScreenViewModel.currentUser?.reporter?: false
+                )
+            }
+
     ) { contentPadding ->
         // Screen content
         Column(modifier = Modifier.padding(contentPadding)) {
             if (postListState.value == MainScreenUIState.Init) {
                 Text(text = "Initializing..")
             } else if (postListState.value is MainScreenUIState.Success) {
+                Log.d("user state", "${mainScreenViewModel.userUIState}")
+                if(mainScreenViewModel.currentUser != null) {
+                    Text(
+                        text = "${mainScreenViewModel.currentUser!!.name}",
+                        fontSize = 25.sp
+                    )
+                }
+
                 LazyColumn() {
                     items((postListState.value as MainScreenUIState.Success).postList){
                         PostCard(post = it.post,
                             onRemoveItem = {
                                 mainScreenViewModel.deletePost(it.postId)
                             },
-                            currentUserId = mainScreenViewModel.currentUserId)
+                            currentUserId = mainScreenViewModel.currentUserId,
+                            showReporterScreen = showOneReporterClick
+                        )
                     }
                 }
             }
@@ -71,15 +90,17 @@ fun MainScreen(
 @Composable
 fun MainFloatingActionButton(
     onWriteNewPostClick: () -> Unit = {},
-    snackbarHostState: SnackbarHostState
+    isClickable: Boolean
 ) {
     val coroutineScope = rememberCoroutineScope()
 
     FloatingActionButton(
         onClick = {
+            if(isClickable){
             onWriteNewPostClick()
+            } else {}
         },
-        containerColor = MaterialTheme.colorScheme.secondary,
+        containerColor = if(isClickable) MaterialTheme.colorScheme.secondary else Color.Gray,
         shape = RoundedCornerShape(16.dp),
     ) {
         Icon(
@@ -116,7 +137,8 @@ fun MainTopBar(title: String, onReportersClick: () -> Unit = {}) {
 fun PostCard(
     post: Post,
     onRemoveItem: () -> Unit = {},
-    currentUserId: String = ""
+    currentUserId: String = "",
+    showReporterScreen: () -> Unit
 ) {
     Card(
         colors = CardDefaults.cardColors(
@@ -142,6 +164,7 @@ fun PostCard(
                 ) {
                     Text(
                         text = post.author,
+                        Modifier.clickable { showReporterScreen() }
                     )
                     Text(
                         text = post.body,

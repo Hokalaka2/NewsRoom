@@ -146,12 +146,13 @@ fun SignUpScreen(
                 is RegisterUIState.RegisterSuccess -> {
                     Text(text = "Registration OK")
 
-                    if(reporterCheckBox){
-                        registerViewModel.createReporter()
-                    }
+                    registerViewModel.createUser(name, email, reporterCheckBox)
                 }
                 is RegisterUIState.ReporterCollectionAdded -> {
                     Text(text = "Reporter added")
+                }
+                is RegisterUIState.RegisterUserSucess -> {
+                    Text(text = "User added")
                 }
                 RegisterUIState.Init -> {}
             }
