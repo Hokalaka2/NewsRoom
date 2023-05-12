@@ -29,7 +29,9 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.lifecycle.viewmodel.viewModelFactory
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
+import coil.request.SuccessResult
 import com.example.newsroom.data.Post
+import com.example.newsroom.data.User
 import com.example.newsroom.ui.screen.reporters.MainTopBar
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
@@ -45,8 +47,6 @@ fun MainScreen(
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
     val postListState = mainScreenViewModel.postsList().collectAsState(initial = MainScreenUIState.Init)
-
-    var currentUser = mainScreenViewModel.currentUser
 
     Scaffold(
         topBar = { MainTopBar(
@@ -67,12 +67,11 @@ fun MainScreen(
             if (postListState.value == MainScreenUIState.Init) {
                 Text(text = "Initializing..")
             } else if (postListState.value is MainScreenUIState.Success) {
-                Log.d("user state", "${mainScreenViewModel.userUIState}")
-                if(mainScreenViewModel.currentUser != null) {
-                    Text(
-                        text = "${mainScreenViewModel.currentUser!!.name}",
-                        fontSize = 25.sp
-                    )
+                when(mainScreenViewModel.userUIState){
+                    is GetUserUIState.Error -> Text(text = "Error Connecting to Server")
+                    is GetUserUIState.Success -> Text("User: ${mainScreenViewModel.currentUser!!.name}")
+                    is GetUserUIState.Loading -> Text("Connecting to Server...")
+                    is GetUserUIState.Init -> Text("Initializing...")
                 }
 
                 LazyColumn() {
