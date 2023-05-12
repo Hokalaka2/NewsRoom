@@ -56,16 +56,24 @@ class MainScreenViewModel(application: Application) : ViewModel() {
     }
 
    fun getUser() {
+       userUIState = GetUserUIState.Loading
         FirebaseFirestore.getInstance().collection(WritePostViewModel.COLLECTION_USERS).document(currentUserId).get()
             .addOnSuccessListener() { documentSnapshot ->
                 Log.e("cu", documentSnapshot.toString())
 
                 if(documentSnapshot != null) {
                     currentUser = documentSnapshot.toObject<User>()
-                    Log.e("cu", currentUser.toString())
+                    userUIState = GetUserUIState.Success(currentUser!!)
                 }
 
             }
+            .addOnFailureListener(){ e ->
+                userUIState = GetUserUIState.Error(e.message)
+            }
+    }
+
+    fun savePost(post: Post) {
+        currentUser!!.savedPosts.add(post)
     }
     fun postsList() = callbackFlow {
         val snapshotListener =

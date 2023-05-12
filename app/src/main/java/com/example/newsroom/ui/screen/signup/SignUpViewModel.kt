@@ -45,8 +45,8 @@ class RegisterViewModel(): ViewModel() {
             name = name,
             email = email,
             reporter = reporter,
-            following = emptyList(),
-            savedPosts =  emptyList()
+            following = ArrayList(),
+            savedPosts =  ArrayList()
         )
 
         val userCollection = FirebaseFirestore.getInstance().collection(COLLECTION_USERS)
@@ -66,7 +66,7 @@ class RegisterViewModel(): ViewModel() {
         val myReporter = Reporter(
             uid = auth.currentUser!!.uid,
             author = name,
-            posts = emptyList()
+            posts = ArrayList()
         )
 
         val reporterCollection = FirebaseFirestore.getInstance().collection(COLLECTION_REPORTERS)

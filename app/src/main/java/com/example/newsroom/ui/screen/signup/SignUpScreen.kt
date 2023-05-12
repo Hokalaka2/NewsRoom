@@ -36,7 +36,7 @@ fun SignUpScreen(
 
     Box() {
         Text(
-            text = "AIT Forum",
+            text = "NewsRoom",
             modifier = Modifier
                 .align(Alignment.TopCenter)
                 .padding(top = 50.dp),

@@ -12,6 +12,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.Save
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -20,6 +21,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.modifier.modifierLocalConsumer
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -48,13 +50,15 @@ fun MainScreen(
 
     Scaffold(
         topBar = { MainTopBar(
-            title = "AIT Forum",
+            title = "NewsRoom",
             onReportersClick = showReportersClick) },
             floatingActionButton = {
-                MainFloatingActionButton(
-                    onWriteNewPostClick = onWriteNewPostClick,
-                    mainScreenViewModel.currentUser?.reporter?: false
-                )
+                if(mainScreenViewModel.currentUser?.reporter?: false) {
+                    MainFloatingActionButton(
+                        onWriteNewPostClick = onWriteNewPostClick,
+                    )
+                }
+
             }
 
     ) { contentPadding ->
@@ -78,7 +82,8 @@ fun MainScreen(
                                 mainScreenViewModel.deletePost(it.postId)
                             },
                             currentUserId = mainScreenViewModel.currentUserId,
-                            showReporterScreen = showOneReporterClick
+                            showReporterScreen = showOneReporterClick,
+                            mainScreenViewModel
                         )
                     }
                 }
@@ -90,17 +95,14 @@ fun MainScreen(
 @Composable
 fun MainFloatingActionButton(
     onWriteNewPostClick: () -> Unit = {},
-    isClickable: Boolean
 ) {
     val coroutineScope = rememberCoroutineScope()
 
     FloatingActionButton(
         onClick = {
-            if(isClickable){
             onWriteNewPostClick()
-            } else {}
         },
-        containerColor = if(isClickable) MaterialTheme.colorScheme.secondary else Color.Gray,
+        containerColor = MaterialTheme.colorScheme.secondary,
         shape = RoundedCornerShape(16.dp),
     ) {
         Icon(
@@ -138,7 +140,8 @@ fun PostCard(
     post: Post,
     onRemoveItem: () -> Unit = {},
     currentUserId: String = "",
-    showReporterScreen: () -> Unit
+    showReporterScreen: () -> Unit,
+    mainScreenViewModel: MainScreenViewModel
 ) {
     Card(
         colors = CardDefaults.cardColors(
@@ -170,6 +173,13 @@ fun PostCard(
                         text = post.body,
                     )
                 }
+                Icon(
+                    imageVector = Icons.Filled.Save,
+                    contentDescription = "Save",
+                    modifier = Modifier.clickable {
+                        mainScreenViewModel.savePost(post)
+                    }
+                )
                 Row(
                     verticalAlignment = Alignment.CenterVertically
                 ) {

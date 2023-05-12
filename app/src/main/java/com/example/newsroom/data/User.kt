@@ -5,6 +5,6 @@ data class User(
     var name: String = "",
     var email: String = "",
     var reporter: Boolean = false,
-    var following: List<Reporter> = emptyList(),
-    var savedPosts: List<Post> = emptyList()
+    var following: ArrayList<Reporter> = ArrayList(),
+    var savedPosts: ArrayList<Post> = ArrayList()
 )
