@@ -2,6 +2,7 @@ package com.example.newsroom.ui.screen.reporters
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -12,13 +13,17 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.newsroom.data.Reporter
 import com.example.newsroom.ui.screen.reporters.ReporterScreenUIState
 import com.example.newsroom.ui.screen.reporters.ReporterScreenViewModel
+import com.example.newsroom.ui.screen.signup.RegisterUIState
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -39,9 +44,21 @@ fun ReporterScreen(
                 LazyColumn() {
                     items((reporterListState.value as ReporterScreenUIState.Success).reporterList){
                         ReporterCard(reporter = it,
-                            currentUserId = reporterScreenViewModel.currentUserId)
+                            currentUserId = reporterScreenViewModel.currentUserId,
+                            reporterScreenViewModel = reporterScreenViewModel)
                     }
                 }
+            }
+            when (reporterScreenViewModel.reporterScreenUIState){
+                is ReporterScreenUIState.Loading -> CircularProgressIndicator()
+                is ReporterScreenUIState.Error -> Text(text = "Error: ${
+                    (reporterScreenViewModel.reporterScreenUIState as ReporterScreenUIState.Error).error
+                }")
+                is ReporterScreenUIState.FollowerCollectionAdded -> {
+                    Text(text = "Follower added")
+                }
+                ReporterScreenUIState.Init -> {}
+                else -> {}
             }
         }
     }
@@ -70,8 +87,10 @@ fun MainTopBar(title: String) {
 @Composable
 fun ReporterCard(
     reporter: Reporter,
-    currentUserId: String = ""
+    currentUserId: String = "",
+    reporterScreenViewModel: ReporterScreenViewModel = viewModel()
 ) {
+    val coroutineScope = rememberCoroutineScope()
     Card(
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surfaceVariant,
@@ -96,7 +115,20 @@ fun ReporterCard(
                 ) {
                     Text(
                         text = reporter.author,
+                        fontSize = 18.sp
                     )
+                    Text(
+                        text = reporter.email,
+                        fontSize = 12.sp
+                    )
+                }
+
+                Button(onClick = {
+                    coroutineScope.launch {
+                        reporterScreenViewModel.createFollower(reporter.uid, reporter.author, reporter.email)
+                    }
+                }) {
+                    Text(text = "Follow")
                 }
             }
         }

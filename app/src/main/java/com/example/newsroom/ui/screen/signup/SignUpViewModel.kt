@@ -4,6 +4,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
+import com.example.newsroom.data.Follower
 import com.example.newsroom.data.Post
 import com.example.newsroom.data.Reporter
 import com.example.newsroom.data.User
@@ -40,12 +41,14 @@ class RegisterViewModel(): ViewModel() {
     fun createUser(name: String, email: String, reporter: Boolean){
         registerUIState = RegisterUIState.Loading
 
+        val following: List<Follower> = emptyList()
+
         val myUser = User(
             uid = auth.currentUser!!.uid,
             name = name,
             email = email,
             reporter = reporter,
-            following = ArrayList(),
+            following = following,
             savedPosts =  ArrayList()
         )
 
@@ -54,18 +57,19 @@ class RegisterViewModel(): ViewModel() {
         userCollection.document(auth.currentUser!!.uid).set(myUser).addOnSuccessListener {
             registerUIState = RegisterUIState.RegisterUserSucess
             if(reporter){
-                createReporter(name)
+                createReporter(name, email)
             }
         }.addOnFailureListener{
             registerUIState = RegisterUIState.Error(it.message)
         }
     }
-    fun createReporter(name: String) {
+    fun createReporter(name: String, email: String) {
         registerUIState = RegisterUIState.Loading
 
         val myReporter = Reporter(
             uid = auth.currentUser!!.uid,
             author = name,
+            email = email,
             posts = ArrayList()
         )
 
