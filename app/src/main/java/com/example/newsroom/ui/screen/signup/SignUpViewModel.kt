@@ -71,7 +71,7 @@ class RegisterViewModel(): ViewModel() {
 
         val reporterCollection = FirebaseFirestore.getInstance().collection(COLLECTION_REPORTERS)
 
-        reporterCollection.add(myReporter).addOnSuccessListener {
+        reporterCollection.document(auth.currentUser!!.uid).set(myReporter).addOnSuccessListener {
             registerUIState = RegisterUIState.ReporterCollectionAdded
         }.addOnFailureListener{
             registerUIState = RegisterUIState.Error(it.message)
