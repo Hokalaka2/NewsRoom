@@ -15,6 +15,9 @@ import com.example.newsroom.data.Post
 import com.example.newsroom.data.PostWithId
 import com.example.newsroom.data.User
 import com.example.newsroom.ui.screen.login.LoginUiState
+import com.example.newsroom.ui.screen.reporters.ReporterScreenUIState
+import com.example.newsroom.ui.screen.reporters.ReporterScreenViewModel
+import com.example.newsroom.ui.screen.signup.RegisterViewModel
 import com.example.newsroom.ui.screen.writepost.WritePostViewModel
 import com.google.android.gms.tasks.Tasks.await
 import com.google.firebase.auth.ktx.auth
@@ -42,12 +45,22 @@ sealed interface GetUserUIState {
 
 }
 
+sealed interface SavePostUIState {
+    object Init : SavePostUIState
+    data class Error(val error: String?) : SavePostUIState
+    object Loading : SavePostUIState
+    object Success: SavePostUIState
+    object PostAlreadySaved: SavePostUIState
+}
+
 class MainScreenViewModel(application: Application) : ViewModel() {
     var userUIState: GetUserUIState by mutableStateOf(GetUserUIState.Init)
 
     var currentUserId: String
 
     var currentUser: User? by mutableStateOf(null)
+    var savePostUIState: SavePostUIState by mutableStateOf(SavePostUIState.Init)
+
 
     init {
         //auth = FirebaseAuth.getInstance()
@@ -73,8 +86,29 @@ class MainScreenViewModel(application: Application) : ViewModel() {
     }
 
     fun savePost(post: Post) {
-        currentUser!!.savedPosts.add(post)
+        val savedPostCollection = FirebaseFirestore.getInstance().collection(COLLECTION_USERS).document(currentUserId).collection(COLLECTION_SAVEDPOSTS)
+        savePostUIState = SavePostUIState.Loading
+        val uid = post.uid
+
+        savedPostCollection
+            .whereEqualTo("uid", uid)
+            .get()
+            .addOnSuccessListener { querySnapshot ->
+                if (querySnapshot.isEmpty) {
+                    savedPostCollection.document(uid).set(post).addOnSuccessListener {
+                        savePostUIState = SavePostUIState.Success
+                    }.addOnFailureListener{
+                        savePostUIState = SavePostUIState.Error(it.message)
+                    }
+                } else {
+                    savePostUIState = SavePostUIState.PostAlreadySaved
+                }
+            }
+            .addOnFailureListener { exception ->
+                savePostUIState = SavePostUIState.Error("Query failed")
+            }
     }
+
     fun postsList() = callbackFlow {
         val snapshotListener =
             FirebaseFirestore.getInstance().collection(WritePostViewModel.COLLECTION_POSTS)
@@ -111,5 +145,7 @@ class MainScreenViewModel(application: Application) : ViewModel() {
                 MainScreenViewModel(application = (this[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY])!!)
             }
         }
+        const val COLLECTION_SAVEDPOSTS = "savedposts"
+        const val COLLECTION_USERS = "users"
     }
 }
