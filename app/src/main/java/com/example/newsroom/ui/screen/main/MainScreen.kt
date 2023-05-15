@@ -168,7 +168,7 @@ fun PostCard(
                 Row(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    if (currentUserId.equals(post.uid)) {
+                    if (currentUserId.equals(post.authoruid)) {
                         Icon(
                             imageVector = Icons.Filled.Delete,
                             contentDescription = "Delete",
