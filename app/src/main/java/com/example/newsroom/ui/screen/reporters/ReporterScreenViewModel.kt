@@ -22,6 +22,8 @@ sealed interface ReporterScreenUIState {
     object FollowerCollectionAdded : ReporterScreenUIState
     data class Error(val error: String?) : ReporterScreenUIState
 
+    object FollowerExists : ReporterScreenUIState
+
     object Loading : ReporterScreenUIState
 }
 
@@ -72,10 +74,22 @@ class ReporterScreenViewModel : ViewModel() {
         val followerCollection = FirebaseFirestore.getInstance().collection(RegisterViewModel.COLLECTION_USERS).document(currentUserId).collection(
             COLLECTION_FOLLOWING)
 
-        followerCollection.document(uid).set(myFollower).addOnSuccessListener {
-            reporterScreenUIState = ReporterScreenUIState.FollowerCollectionAdded
-        }.addOnFailureListener{
-            reporterScreenUIState = ReporterScreenUIState.Error(it.message)
-        }
+        followerCollection
+            .whereEqualTo("uid", uid)
+            .get()
+            .addOnSuccessListener { querySnapshot ->
+                if (querySnapshot.isEmpty) {
+                    followerCollection.document(uid).set(myFollower).addOnSuccessListener {
+                        reporterScreenUIState = ReporterScreenUIState.FollowerCollectionAdded
+                    }.addOnFailureListener{
+                        reporterScreenUIState = ReporterScreenUIState.Error(it.message)
+                    }
+                } else {
+                    reporterScreenUIState = ReporterScreenUIState.FollowerExists
+                }
+            }
+            .addOnFailureListener { exception ->
+                reporterScreenUIState = ReporterScreenUIState.Error("Query failed")
+            }
     }
 }

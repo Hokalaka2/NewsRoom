@@ -54,6 +54,9 @@ fun ReporterScreen(
                 is ReporterScreenUIState.Error -> Text(text = "Error: ${
                     (reporterScreenViewModel.reporterScreenUIState as ReporterScreenUIState.Error).error
                 }")
+                is ReporterScreenUIState.FollowerExists -> {
+                    Text(text = "Already following")
+                }
                 is ReporterScreenUIState.FollowerCollectionAdded -> {
                     Text(text = "Follower added")
                 }
