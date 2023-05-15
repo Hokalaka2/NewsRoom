@@ -11,6 +11,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
+import com.example.newsroom.data.Follower
 import com.example.newsroom.data.Post
 import com.example.newsroom.data.PostWithId
 import com.example.newsroom.data.User
@@ -88,7 +89,7 @@ class MainScreenViewModel(application: Application) : ViewModel() {
     fun savePost(post: Post) {
         val savedPostCollection = FirebaseFirestore.getInstance().collection(COLLECTION_USERS).document(currentUserId).collection(COLLECTION_SAVEDPOSTS)
         savePostUIState = SavePostUIState.Loading
-        val uid = post.uid
+        val uid = post.authoruid
 
         savedPostCollection
             .whereEqualTo("uid", uid)

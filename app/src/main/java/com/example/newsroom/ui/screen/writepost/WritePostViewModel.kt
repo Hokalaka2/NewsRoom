@@ -38,7 +38,7 @@ class WritePostViewModel: ViewModel() {
         writePostUiState = WritePostUiState.LoadingPostUpload
 
         val myPost = Post(
-            uid = auth.currentUser!!.uid,
+            authoruid = auth.currentUser!!.uid,
             author = auth.currentUser!!.email!!,
             title = title,
             body = postBody

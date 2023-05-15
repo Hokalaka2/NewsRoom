@@ -1,10 +1,10 @@
 package com.example.newsroom.data
 
 data class Post(
-    var uid: String = "",
+    var authoruid: String = "",
     var author: String = "",
     var title: String = "",
-    var body: String = "",
+    var body: String = ""
 )
 
 data class PostWithId(
