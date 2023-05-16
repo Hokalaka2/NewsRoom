@@ -117,8 +117,25 @@ class MainScreenViewModel(application: Application) : ViewModel() {
                     val response = if (snapshot != null) {
                         val postList = snapshot.toObjects(Post::class.java)
                         val postWithIdList = mutableListOf<PostWithId>()
+
+                        val followerCollection = FirebaseFirestore.getInstance().collection(RegisterViewModel.COLLECTION_USERS).document(currentUserId).collection(
+                            ReporterScreenViewModel.COLLECTION_FOLLOWING
+                        )
+
                         postList.forEachIndexed { index, post ->
-                            postWithIdList.add(PostWithId(snapshot.documents[index].id, post))
+                            followerCollection
+                                .whereEqualTo("uid", post.authoruid)
+                                .get()
+                                .addOnSuccessListener { querySnapshot ->
+                                    if (querySnapshot.isEmpty) {
+                                        println("Not")
+                                    } else {
+                                        postWithIdList.add(PostWithId(snapshot.documents[index].id, post))
+                                    }
+                                }
+                                .addOnFailureListener { exception ->
+                                    MainScreenUIState.Error("Query failed")
+                                }
                         }
                         MainScreenUIState.Success(
                             postWithIdList
