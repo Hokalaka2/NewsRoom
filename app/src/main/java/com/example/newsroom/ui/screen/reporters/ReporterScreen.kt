@@ -8,6 +8,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Backspace
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -28,13 +29,15 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ReporterScreen(
-    reporterScreenViewModel: ReporterScreenViewModel = viewModel()
+    reporterScreenViewModel: ReporterScreenViewModel = viewModel(),
+    showMainScreenClick: () -> Unit
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
     val reporterListState = reporterScreenViewModel.reportersList().collectAsState(initial = ReporterScreenUIState.Init)
 
     Scaffold(
-        topBar = { MainTopBar(title = "Reporters") },
+        topBar = { MainTopBar(title = "Reporters",
+        showMainScreenClick = showMainScreenClick) },
     ) { contentPadding ->
         // Screen content
         Column(modifier = Modifier.padding(contentPadding)) {
@@ -69,7 +72,10 @@ fun ReporterScreen(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainTopBar(title: String) {
+fun MainTopBar(
+    title: String,
+    showMainScreenClick: () -> Unit
+) {
     TopAppBar(
         title = { Text(title) },
         colors = TopAppBarDefaults.topAppBarColors(
@@ -78,9 +84,9 @@ fun MainTopBar(title: String) {
         ),
         actions = {
             IconButton(
-                onClick = { }
+                onClick = { showMainScreenClick()}
             ) {
-                Icon(Icons.Filled.Info, contentDescription = "Info")
+                Icon(Icons.Filled.Backspace, contentDescription = "Info")
             }
         }
     )

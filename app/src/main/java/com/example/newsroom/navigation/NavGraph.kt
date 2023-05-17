@@ -62,7 +62,11 @@ fun NavGraph(
             )
         }
         composable(Screen.Reporters.route){
-            ReporterScreen()
+            ReporterScreen(
+                showMainScreenClick = {
+                    navController.navigate(Screen.Main.route)
+                }
+            )
         }
     }
 }
