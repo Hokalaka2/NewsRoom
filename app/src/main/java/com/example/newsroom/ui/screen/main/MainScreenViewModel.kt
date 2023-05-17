@@ -4,6 +4,7 @@ import android.app.Application
 import android.util.Log
 import androidx.compose.animation.core.snap
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -116,7 +117,7 @@ class MainScreenViewModel : ViewModel() {
                 .addSnapshotListener() { snapshot, e ->
                     val response = if (snapshot != null) {
                         val postList = snapshot.toObjects(Post::class.java)
-                        val postWithIdList = mutableListOf<PostWithId>()
+                        val postWithIdList = mutableStateListOf<PostWithId>()
 
                         val followerCollection = FirebaseFirestore.getInstance().collection(RegisterViewModel.COLLECTION_USERS).document(currentUserId).collection(
                             ReporterScreenViewModel.COLLECTION_FOLLOWING
