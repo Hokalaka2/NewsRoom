@@ -54,11 +54,10 @@ sealed interface SavePostUIState {
     object PostAlreadySaved: SavePostUIState
 }
 
-class MainScreenViewModel(application: Application) : ViewModel() {
+class MainScreenViewModel : ViewModel() {
     var userUIState: GetUserUIState by mutableStateOf(GetUserUIState.Init)
 
     var currentUserId: String
-    var mainScreenUIState: MainScreenUIState by mutableStateOf(MainScreenUIState.Init)
 
     var currentUser: User? by mutableStateOf(null)
     var savePostUIState: SavePostUIState by mutableStateOf(SavePostUIState.Init)
@@ -142,7 +141,6 @@ class MainScreenViewModel(application: Application) : ViewModel() {
                         MainScreenUIState.Success(
                             postWithIdList
                         )
-
                     } else {
                         MainScreenUIState.Error(e?.message.toString())
                     }
@@ -161,11 +159,6 @@ class MainScreenViewModel(application: Application) : ViewModel() {
     }
 
     companion object {
-        val factory: ViewModelProvider.Factory = viewModelFactory {
-            initializer {
-                MainScreenViewModel(application = (this[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY])!!)
-            }
-        }
         const val COLLECTION_SAVEDPOSTS = "savedposts"
         const val COLLECTION_USERS = "users"
     }

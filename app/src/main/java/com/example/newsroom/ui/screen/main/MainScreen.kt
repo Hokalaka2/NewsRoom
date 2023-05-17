@@ -28,7 +28,7 @@ import com.example.newsroom.data.Post
 fun MainScreen(
     onWriteNewPostClick: () -> Unit = {},
     showReportersClick: () -> Unit = {},
-    mainScreenViewModel: MainScreenViewModel = viewModel(factory = MainScreenViewModel.factory),
+    mainScreenViewModel: MainScreenViewModel = viewModel(),
     showOneReporterClick: () -> Unit = {},
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
