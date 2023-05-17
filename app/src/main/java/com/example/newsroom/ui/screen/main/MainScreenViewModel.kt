@@ -15,6 +15,7 @@ import com.example.newsroom.data.Follower
 import com.example.newsroom.data.Post
 import com.example.newsroom.data.PostWithId
 import com.example.newsroom.data.User
+import com.example.newsroom.navigation.Screen
 import com.example.newsroom.ui.screen.login.LoginUiState
 import com.example.newsroom.ui.screen.reporters.ReporterScreenUIState
 import com.example.newsroom.ui.screen.reporters.ReporterScreenViewModel
@@ -33,7 +34,6 @@ import org.w3c.dom.Document
 
 sealed interface MainScreenUIState {
     object Init : MainScreenUIState
-
     data class Success(val postList: List<PostWithId>) : MainScreenUIState
     data class Error(val error: String?) : MainScreenUIState
 }
@@ -58,6 +58,7 @@ class MainScreenViewModel(application: Application) : ViewModel() {
     var userUIState: GetUserUIState by mutableStateOf(GetUserUIState.Init)
 
     var currentUserId: String
+    var mainScreenUIState: MainScreenUIState by mutableStateOf(MainScreenUIState.Init)
 
     var currentUser: User? by mutableStateOf(null)
     var savePostUIState: SavePostUIState by mutableStateOf(SavePostUIState.Init)
@@ -136,10 +137,12 @@ class MainScreenViewModel(application: Application) : ViewModel() {
                                 .addOnFailureListener { exception ->
                                     MainScreenUIState.Error("Query failed")
                                 }
+
                         }
                         MainScreenUIState.Success(
                             postWithIdList
                         )
+
                     } else {
                         MainScreenUIState.Error(e?.message.toString())
                     }

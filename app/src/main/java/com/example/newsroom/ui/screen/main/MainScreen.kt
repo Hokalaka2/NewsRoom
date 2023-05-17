@@ -52,7 +52,8 @@ fun MainScreen(
         Column(modifier = Modifier.padding(contentPadding)) {
             if (postListState.value == MainScreenUIState.Init) {
                 Text(text = "Initializing..")
-            } else if (postListState.value is MainScreenUIState.Success) {
+            }
+            else if (postListState.value is MainScreenUIState.Success) {
                 when(mainScreenViewModel.userUIState){
                     is GetUserUIState.Error -> Text(text = "Error Connecting to Server")
                     is GetUserUIState.Success -> Text("User: ${mainScreenViewModel.currentUser!!.name}")
