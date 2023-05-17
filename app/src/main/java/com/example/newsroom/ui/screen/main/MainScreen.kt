@@ -53,16 +53,16 @@ fun MainScreen(
             if (postListState.value == MainScreenUIState.Init) {
                 Text(text = "Initializing..")
             }
-            else if (postListState.value is MainScreenUIState.Success) {
+            else if (mainScreenViewModel.postUIState is MainScreenUIState.Success) {
                 when(mainScreenViewModel.userUIState){
                     is GetUserUIState.Error -> Text(text = "Error Connecting to Server")
                     is GetUserUIState.Success -> Text("User: ${mainScreenViewModel.currentUser!!.name}")
                     is GetUserUIState.Loading -> Text("Connecting to Server...")
                     is GetUserUIState.Init -> Text("Initializing...")
                 }
-
+                Text(text = "${postListState.value}")
                 LazyColumn() {
-                    items((postListState.value as MainScreenUIState.Success).postList){
+                    items((mainScreenViewModel.postUIState as MainScreenUIState.Success).postList){
                         PostCard(post = it.post,
                             onRemoveItem = {
                                 mainScreenViewModel.deletePost(it.postId)
